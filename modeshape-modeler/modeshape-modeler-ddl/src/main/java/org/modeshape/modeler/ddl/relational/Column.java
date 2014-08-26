@@ -22,7 +22,7 @@ public class Column extends RelationalObject {
     /**
      * @param nullValueCount Sets nullValueCount to the specified value.
      */
-    public void setNullValueCount( int nullValueCount ) {
+    public void setNullValueCount( long nullValueCount ) {
     	setPropertyValue(RelationalConstants.COLUMN_DDL_OPTION_KEYS.NULL_VALUE_COUNT,nullValueCount);
     }
     
@@ -83,16 +83,16 @@ public class Column extends RelationalObject {
      * @param nullable Sets nullable to the specified value.
      */
     public void setNullable( String nullable ) {
-//    	ArgCheck.isNotEmpty(nullable);
-//    	String[] allowedValues = NULLABLE.AS_ARRAY;
-//    	boolean matchFound = false;
-//    	for(int i=0; i<allowedValues.length; i++) {
-//    		if(allowedValues[i].equalsIgnoreCase(nullable)) {
-//    			this.nullable = allowedValues[i];
-//    			matchFound = true;
-//    		}
-//    	}
-//    	if(!matchFound) throw new IllegalArgumentException(Messages.getString(RELATIONAL.columnError_Nullable_NotAllowable,nullable));
+    	//ArgCheck.isNotEmpty(nullable);
+    	String[] allowedValues = RelationalConstants.NULLABLE_OPTIONS.AS_ARRAY;
+    	boolean matchFound = false;
+    	for(int i=0; i<allowedValues.length; i++) {
+    		if(allowedValues[i].equalsIgnoreCase(nullable)) {
+    			setPropertyValue(RelationalConstants.COLUMN_DDL_PROPERTY_KEYS.NULLABLE,allowedValues[i]);
+    			matchFound = true;
+    		}
+    	}
+    	//if(!matchFound) throw new IllegalArgumentException(Messages.getString(RELATIONAL.columnError_Nullable_NotAllowable,nullable));
     }
     
     /**
@@ -217,7 +217,7 @@ public class Column extends RelationalObject {
     /**
      * @param precision Sets precision to the specified value.
      */
-    public void setPrecision( int precision ) {
+    public void setPrecision( long precision ) {
 		setPropertyValue(RelationalConstants.COLUMN_DDL_PROPERTY_KEYS.PRECISION,precision);
     }
     
@@ -231,7 +231,7 @@ public class Column extends RelationalObject {
     /**
      * @param scale Sets scale to the specified value.
      */
-    public void setScale( int scale ) {
+    public void setScale( long scale ) {
 		setPropertyValue(RelationalConstants.COLUMN_DDL_PROPERTY_KEYS.SCALE,scale);
     }
    
@@ -245,7 +245,7 @@ public class Column extends RelationalObject {
     /**
      * @param radix Sets radix to the specified value.
      */
-    public void setRadix( int radix ) {
+    public void setRadix( long radix ) {
 		setPropertyValue(RelationalConstants.COLUMN_DDL_OPTION_KEYS.RADIX,radix);
     }
     
@@ -259,7 +259,7 @@ public class Column extends RelationalObject {
 	/**
 	 * @param characterOctetLength the characterOctetLength to set
 	 */
-	public void setCharacterOctetLength(int characterOctetLength) {
+	public void setCharacterOctetLength(long characterOctetLength) {
 		setPropertyValue(RelationalConstants.COLUMN_DDL_OPTION_KEYS.CHAR_OCTET_LENGTH,characterOctetLength);
 	}
 
@@ -288,15 +288,15 @@ public class Column extends RelationalObject {
      * @param searchability Sets searchability to the specified value.
      */
     public void setSearchability( String searchability ) {
-//    	ArgCheck.isNotEmpty(searchability);
-//    	String[] allowedValues = SEARCHABILITY.AS_ARRAY;
-//    	boolean matchFound = false;
-//    	for(int i=0; i<allowedValues.length; i++) {
-//    		if(allowedValues[i].equalsIgnoreCase(searchability)) {
-//    			this.searchability = allowedValues[i];
-//    			matchFound = true;
-//    		}
-//    	}
+    	//ArgCheck.isNotEmpty(searchability);
+    	String[] allowedValues = RelationalConstants.SEARCHABILITY_OPTIONS.AS_ARRAY;
+    	boolean matchFound = false;
+    	for(int i=0; i<allowedValues.length; i++) {
+    		if(allowedValues[i].equalsIgnoreCase(searchability)) {
+    			setPropertyValue(RelationalConstants.COLUMN_DDL_OPTION_KEYS.SEARCHABLE,allowedValues[i]);
+    			matchFound = true;
+    		}
+    	}
 //    	if(!matchFound) throw new IllegalArgumentException(Messages.getString(RELATIONAL.columnError_Searchability_NotAllowable,searchability));
     }
 
@@ -513,25 +513,25 @@ public class Column extends RelationalObject {
 		// ---------------------------
 		} else if(propertyKey.equals(RelationalConstants.COLUMN_DDL_PROPERTY_KEYS.NULLABLE)) {
 			String pVal = (propertyValue==null) ? RelationalConstants.COLUMN_DEFAULT.NULLABLE : (String)propertyValue;
-			wasSet = this.delegate.setPropertyValue(propertyKey, pVal);
+			wasSet = this.delegate.setPropertyValue(StandardDdlLexicon.NULLABLE, pVal);
 		} else if(propertyKey.equals(RelationalConstants.COLUMN_DDL_PROPERTY_KEYS.AUTO_INCREMENTED)) {
 			Boolean pVal = (propertyValue==null) ? RelationalConstants.COLUMN_DEFAULT.AUTO_INCREMENTED : (Boolean)propertyValue;
-			wasSet = this.delegate.setPropertyValue(propertyKey, pVal);
+			wasSet = this.delegate.setPropertyValue(TeiidDdlLexicon.CreateTable.AUTO_INCREMENT, pVal);
 		} else if(propertyKey.equals(RelationalConstants.COLUMN_DDL_PROPERTY_KEYS.DATATYPE_NAME)) {
 			String pVal = (propertyValue==null) ? RelationalConstants.COLUMN_DEFAULT.DATATYPE_NAME : (String)propertyValue;
-			wasSet = this.delegate.setPropertyValue(propertyKey, pVal);
+			wasSet = this.delegate.setPropertyValue(StandardDdlLexicon.DATATYPE_NAME, pVal);
 		} else if(propertyKey.equals(RelationalConstants.COLUMN_DDL_PROPERTY_KEYS.LENGTH)) {
 			Long pVal = (propertyValue==null) ? RelationalConstants.COLUMN_DEFAULT.LENGTH : (Long)propertyValue;
-			wasSet = this.delegate.setPropertyValue(propertyKey, pVal);
+			wasSet = this.delegate.setPropertyValue(StandardDdlLexicon.DATATYPE_LENGTH, pVal);
 		} else if(propertyKey.equals(RelationalConstants.COLUMN_DDL_PROPERTY_KEYS.PRECISION)) {
 			Long pVal = (propertyValue==null) ? RelationalConstants.COLUMN_DEFAULT.PRECISION : (Long)propertyValue;
-			wasSet = this.delegate.setPropertyValue(propertyKey, pVal);
+			wasSet = this.delegate.setPropertyValue(StandardDdlLexicon.DATATYPE_PRECISION, pVal);
 		} else if(propertyKey.equals(RelationalConstants.COLUMN_DDL_PROPERTY_KEYS.SCALE)) {
 			Long pVal = (propertyValue==null) ? RelationalConstants.COLUMN_DEFAULT.SCALE : (Long)propertyValue;
-			wasSet = this.delegate.setPropertyValue(propertyKey, pVal);
+			wasSet = this.delegate.setPropertyValue(StandardDdlLexicon.DATATYPE_SCALE, pVal);
 		} else if(propertyKey.equals(RelationalConstants.COLUMN_DDL_PROPERTY_KEYS.DEFAULT_VALUE)) {
 			String pVal = (propertyValue==null) ? RelationalConstants.COLUMN_DEFAULT.DEFAULT_VALUE : (String)propertyValue;
-			wasSet = this.delegate.setPropertyValue(propertyKey, pVal);
+			wasSet = this.delegate.setPropertyValue(StandardDdlLexicon.DEFAULT_VALUE, pVal);
 		}
 		return wasSet;
 	}

@@ -55,7 +55,7 @@ public class Table extends RelationalObject {
 	 * Set the materialized tablename
      * @param tablename the Materialized tablename
      */
-	public void getMaterializedTable(String tablename) {
+	public void setMaterializedTable(String tablename) {
 		setPropertyValue(RelationalConstants.TABLE_DDL_OPTION_KEYS.MATERIALIZED_TABLE,tablename);
 	}
 	

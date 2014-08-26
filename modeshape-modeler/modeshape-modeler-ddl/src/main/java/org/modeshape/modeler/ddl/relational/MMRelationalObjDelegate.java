@@ -215,13 +215,15 @@ public class MMRelationalObjDelegate implements IObjectDelegate {
 			ModelObject statementOption = getStatementOption(name);
 			// If no statement option, create one
 			if(statementOption==null) {
+				// Create new option node
 				this.modelObj.addChild(name);
-				setChildMixinType(name,StandardDdlLexicon.TYPE_STATEMENT_OPTION);
-				// Get created statement option
-				statementOption = getStatementOption(name);
-			}
-			// Set statement option value
-			if(statementOption!=null) {
+				// Property map - value is required
+				Map<String,Object> propMap = new HashMap<String,Object>();
+				propMap.put(StandardDdlLexicon.VALUE,value);
+				// Set the Type and value property
+				setChildMixinType(name,StandardDdlLexicon.TYPE_STATEMENT_OPTION,propMap);
+				wasSet=true;
+			} else {
 				statementOption.setProperty(StandardDdlLexicon.VALUE, value, additionalValues);
 				wasSet=true;
 			}
@@ -250,9 +252,10 @@ public class MMRelationalObjDelegate implements IObjectDelegate {
 	 * Set the mixinType of the specified child
 	 * @param name the child name
 	 * @param mixinType the mixinType
+	 * @param propMap the map of (possibly mandatory) props
 	 * @throws ModelerException the exception
 	 */
-	private void setChildMixinType(String name, String mixinType) throws ModelerException {
+	private void setChildMixinType(String name, String mixinType, Map<String,?> propMap) throws ModelerException {
 		ModelObject[] moChildren = null;
 		try {
 			moChildren = this.modelObj.children();
@@ -262,7 +265,7 @@ public class MMRelationalObjDelegate implements IObjectDelegate {
 		if(moChildren!=null) {
 			for(ModelObject mo : moChildren) {
 				if(mo.name().equals(name)) {
-					mo.setMixinTypes(mixinType);
+					mo.addMixinType(mixinType, propMap);
 				}
 			}
 		}
@@ -299,11 +302,10 @@ public class MMRelationalObjDelegate implements IObjectDelegate {
 	public boolean setPropertyValue(String name, Object value, Object... additionalValues) {
 		boolean wasSet = false;
 		try {
-			if(modelObj.hasProperty(name)) {
-				modelObj.setProperty(name, value, additionalValues);
-				wasSet = true;
-			}
+			modelObj.setProperty(name, value, additionalValues);
+			wasSet = true;
 		} catch (Exception ex) {
+			System.out.println();
             //KLog.getLogger().error(ex.getLocalizedMessage(), ex);
 		}
 		return wasSet;

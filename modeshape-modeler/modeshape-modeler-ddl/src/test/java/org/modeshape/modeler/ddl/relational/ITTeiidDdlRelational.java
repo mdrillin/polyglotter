@@ -37,6 +37,10 @@ import org.modeshape.modeler.Model;
 import org.modeshape.modeler.ModelObject;
 import org.modeshape.modeler.ddl.TeiidDdlIntegrationTest;
 import org.modeshape.modeler.ddl.TeiidDdlLexicon;
+import org.modeshape.modeler.ddl.relational.RelationalConstants.DETERMINISM_OPTIONS;
+import org.modeshape.modeler.ddl.relational.RelationalConstants.NULLABLE_OPTIONS;
+import org.modeshape.modeler.ddl.relational.RelationalConstants.SEARCHABILITY_OPTIONS;
+import org.modeshape.modeler.ddl.relational.RelationalConstants.UPDATE_COUNT_OPTIONS;
 
 @SuppressWarnings( "javadoc" )
 public class ITTeiidDdlRelational extends TeiidDdlIntegrationTest {
@@ -772,12 +776,130 @@ public class ITTeiidDdlRelational extends TeiidDdlIntegrationTest {
     }
     
 	/**
-     * Test setting of properties of relational entities after import of Teiid-SAPGateway.ddl
+     * Test setting of properties of relational tables after import of Teiid-SAPGateway.ddl
      * Expected outcome - successful modification
 	 * @throws Exception the exception
      */
     @Test
-    public void shouldSetProperties_SAPGateway() throws Exception {
+    public void shouldSetTableProperties() throws Exception {
+    	File ddlFile = new File( TEIID_SAP_GATEWAY_MEDIUM );
+    	RelationalModel relationalModel = getRelationalModel(ddlFile);
+    	
+    	// Get Model name
+    	//String modelName = relationalModel.getName();
+            	
+    	// ---------------------------------------
+    	// Test expected tables for the model
+    	// ---------------------------------------
+    	String[] tableNames = new String[] {"CarrierCollection","FlightCollection"};
+    	boolean hasTables = RelationalTestUtil.childrenMatch(relationalModel,tableNames, RelationalConstants.Type.TABLE);
+    	if(!hasTables) {
+    		Assert.fail("expected Tables do not match");   //$NON-NLS-1$
+    	}
+    	
+    	// ----------------------------------------
+    	// Test expected params
+    	// ----------------------------------------
+    	Table table = relationalModel.getTable("FlightCollection");
+
+    	// ----------------------------------------------------
+    	// Test expected properties for FlightCollection table
+    	// ----------------------------------------------------
+    	Map<String,Object> expectedProps = new HashMap<String,Object>();
+    	expectedProps.putAll(RelationalConstants.TABLE_DEFAULT.toMap());
+    	expectedProps.put(RelationalConstants.COMMON_DDL_PROPERTY_KEYS.NAME, "FlightCollection"); //$NON-NLS-1$ //$NON-NLS-2$
+    	expectedProps.put("teiid_odata:EntityType", "RMTSAMPLEFLIGHT.Flight"); //$NON-NLS-1$ //$NON-NLS-2$
+    	
+    	// Compare object properties to expected
+    	String result = RelationalTestUtil.compareProperties(table, expectedProps);
+    	if(!result.equals("OK")) { //$NON-NLS-1$
+    		Assert.fail(result);  
+    	}
+
+    	// ----------------------------------
+    	// Set existing OPTION PROPERTIES
+    	// ----------------------------------
+    	// Set the NameInSource
+    	table.setNameInSource("newNIS");
+    	// Compare object properties to expected
+    	expectedProps.put(RelationalConstants.COMMON_DDL_OPTION_KEYS.NAME_IN_SOURCE, "newNIS"); //$NON-NLS-1$ 
+    	result = RelationalTestUtil.compareProperties(table, expectedProps);
+    	if(!result.equals("OK")) { //$NON-NLS-1$
+    		Assert.fail(result);  
+    	}
+    	
+    	// UnSet the NameInSource
+    	table.setNameInSource(null);
+    	// Compare object properties to expected
+    	expectedProps.put(RelationalConstants.COMMON_DDL_OPTION_KEYS.NAME_IN_SOURCE, null); //$NON-NLS-1$ 
+    	result = RelationalTestUtil.compareProperties(table, expectedProps);
+    	if(!result.equals("OK")) { //$NON-NLS-1$
+    		Assert.fail(result);  
+    	}
+    	
+    	// UnSet the Description
+    	table.setNameInSource("anotherNIS");
+    	// Compare object properties to expected
+    	expectedProps.put(RelationalConstants.COMMON_DDL_OPTION_KEYS.NAME_IN_SOURCE, "anotherNIS"); //$NON-NLS-1$ 
+    	result = RelationalTestUtil.compareProperties(table, expectedProps);
+    	if(!result.equals("OK")) { //$NON-NLS-1$
+    		Assert.fail(result);  
+    	}
+    	
+    	// Set the Description
+    	table.setDescription("newDescription");
+    	// Compare object properties to expected
+    	expectedProps.put(RelationalConstants.COMMON_DDL_OPTION_KEYS.DESCRIPTION, "newDescription"); //$NON-NLS-1$ 
+    	result = RelationalTestUtil.compareProperties(table, expectedProps);
+    	if(!result.equals("OK")) { //$NON-NLS-1$
+    		Assert.fail(result);  
+    	}
+    	
+    	// UnSet the Description
+    	table.setDescription(null);
+    	// Compare object properties to expected
+    	expectedProps.put(RelationalConstants.COMMON_DDL_OPTION_KEYS.DESCRIPTION, null); //$NON-NLS-1$ 
+    	result = RelationalTestUtil.compareProperties(table, expectedProps);
+    	if(!result.equals("OK")) { //$NON-NLS-1$
+    		Assert.fail(result);  
+    	}
+    	
+    	// Set new Description
+    	table.setDescription("anotherDescription");
+    	// Compare object properties to expected
+    	expectedProps.put(RelationalConstants.COMMON_DDL_OPTION_KEYS.DESCRIPTION, "anotherDescription"); //$NON-NLS-1$ 
+    	result = RelationalTestUtil.compareProperties(table, expectedProps);
+    	if(!result.equals("OK")) { //$NON-NLS-1$
+    		Assert.fail(result);  
+    	}
+    	
+    	// ----------------------------------
+    	// Set other column PROPERTIES
+    	// ----------------------------------
+    	table.setCardinality(999);
+    	table.setMaterialized(true);
+    	table.setMaterializedTable("matTable");
+    	table.setSupportsUpdate(false);
+    	
+    	// Compare object properties to expected
+    	expectedProps.put(RelationalConstants.TABLE_DDL_OPTION_KEYS.CARDINALITY, 999); 
+    	expectedProps.put(RelationalConstants.TABLE_DDL_OPTION_KEYS.MATERIALIZED, true); 
+    	expectedProps.put(RelationalConstants.TABLE_DDL_OPTION_KEYS.MATERIALIZED_TABLE, "matTable"); 
+    	expectedProps.put(RelationalConstants.TABLE_DDL_OPTION_KEYS.UPDATABLE, false); 
+    	result = RelationalTestUtil.compareProperties(table, expectedProps);
+    	if(!result.equals("OK")) { //$NON-NLS-1$
+    		Assert.fail(result);  
+    	}
+    	
+    }
+    
+	/**
+     * Test setting of properties of relational columns after import of Teiid-SAPGateway.ddl
+     * Expected outcome - successful modification
+	 * @throws Exception the exception
+     */
+    @Test
+    public void shouldSetColumnProperties() throws Exception {
     	File ddlFile = new File( TEIID_SAP_GATEWAY_MEDIUM );
     	RelationalModel relationalModel = getRelationalModel(ddlFile);
     	
@@ -808,23 +930,12 @@ public class ITTeiidDdlRelational extends TeiidDdlIntegrationTest {
     	if(!hasColumns) {
     		Assert.fail("expected columns do not match");   //$NON-NLS-1$
     	}
-    	// ----------------------------------------------------
-    	// Test expected properties for FlightCollection table
-    	// ----------------------------------------------------
-    	Map<String,Object> expectedProps = new HashMap<String,Object>();
-    	expectedProps.putAll(RelationalConstants.TABLE_DEFAULT.toMap());
-    	expectedProps.put(RelationalConstants.COMMON_DDL_PROPERTY_KEYS.NAME, "FlightCollection"); //$NON-NLS-1$ //$NON-NLS-2$
-    	expectedProps.put("teiid_odata:EntityType", "RMTSAMPLEFLIGHT.Flight"); //$NON-NLS-1$ //$NON-NLS-2$
-    	
-    	// Compare object properties to expected
-    	String result = RelationalTestUtil.compareProperties(table, expectedProps);
-    	if(!result.equals("OK")) { //$NON-NLS-1$
-    		Assert.fail(result);  
-    	}
+
     	// ---------------------------------------------------------------
     	// Test expected properties for flightDetails_flightType column
     	// ---------------------------------------------------------------
     	// flightDetails_flightType string(1) NOT NULL OPTIONS (ANNOTATION 'Charter', NAMEINSOURCE 'flightType', "teiid_odata:ColumnGroup" 'flightDetails', "teiid_odata:ComplexType" 'FlightDetails'),
+    	Map<String,Object> expectedProps = new HashMap<String,Object>();
     	expectedProps = new HashMap<String,Object>();
     	expectedProps.putAll(RelationalConstants.COLUMN_DEFAULT.toMap());
     	expectedProps.put(RelationalConstants.COMMON_DDL_PROPERTY_KEYS.NAME, "flightDetails_flightType"); //$NON-NLS-1$
@@ -838,16 +949,11 @@ public class ITTeiidDdlRelational extends TeiidDdlIntegrationTest {
     	
     	Column column = table.getColumn("flightDetails_flightType");
     	// Compare object properties to expected
-    	result = RelationalTestUtil.compareProperties(column, expectedProps);
+    	String result = RelationalTestUtil.compareProperties(column, expectedProps);
     	if(!result.equals("OK")) { //$NON-NLS-1$
     		Assert.fail(result);  
     	}
-    	
-    	// TODO: Currently, if a statementOption exists - you can change its value OK.
-    	// However, if the statementOption does NOT exist, an exception is thrown when setting the mixinType.
-    	// Issue https://github.com/Polyglotter/polyglotter/issues/217 needs to be fixed.  Allows for supplying mandatory properties
-    	// Therefore, the final "setDescription()" is failing. (since the unset causes the node to be removed).
-    	
+    	    	
     	// ----------------------------------
     	// Set existing OPTION PROPERTIES
     	// ----------------------------------
@@ -855,6 +961,24 @@ public class ITTeiidDdlRelational extends TeiidDdlIntegrationTest {
     	column.setNameInSource("newNIS");
     	// Compare object properties to expected
     	expectedProps.put(RelationalConstants.COMMON_DDL_OPTION_KEYS.NAME_IN_SOURCE, "newNIS"); //$NON-NLS-1$ 
+    	result = RelationalTestUtil.compareProperties(column, expectedProps);
+    	if(!result.equals("OK")) { //$NON-NLS-1$
+    		Assert.fail(result);  
+    	}
+    	
+    	// UnSet the NameInSource
+    	column.setNameInSource(null);
+    	// Compare object properties to expected
+    	expectedProps.put(RelationalConstants.COMMON_DDL_OPTION_KEYS.NAME_IN_SOURCE, null); //$NON-NLS-1$ 
+    	result = RelationalTestUtil.compareProperties(column, expectedProps);
+    	if(!result.equals("OK")) { //$NON-NLS-1$
+    		Assert.fail(result);  
+    	}
+    	
+    	// UnSet the Description
+    	column.setNameInSource("anotherNIS");
+    	// Compare object properties to expected
+    	expectedProps.put(RelationalConstants.COMMON_DDL_OPTION_KEYS.NAME_IN_SOURCE, "anotherNIS"); //$NON-NLS-1$ 
     	result = RelationalTestUtil.compareProperties(column, expectedProps);
     	if(!result.equals("OK")) { //$NON-NLS-1$
     		Assert.fail(result);  
@@ -878,7 +1002,7 @@ public class ITTeiidDdlRelational extends TeiidDdlIntegrationTest {
     		Assert.fail(result);  
     	}
     	
-    	// UnSet the Description
+    	// Set new Description
     	column.setDescription("anotherDescription");
     	// Compare object properties to expected
     	expectedProps.put(RelationalConstants.COMMON_DDL_OPTION_KEYS.DESCRIPTION, "anotherDescription"); //$NON-NLS-1$ 
@@ -886,7 +1010,227 @@ public class ITTeiidDdlRelational extends TeiidDdlIntegrationTest {
     	if(!result.equals("OK")) { //$NON-NLS-1$
     		Assert.fail(result);  
     	}
-   	
+    	
+    	// ----------------------------------
+    	// Set other column PROPERTIES
+    	// ----------------------------------
+    	// Set the updatable property
+    	column.setNullable(NULLABLE_OPTIONS.NULL);
+    	column.setAutoIncremented(true);
+    	column.setLength(3);
+    	column.setCaseSensitive(false);
+    	column.setCharacterOctetLength(3);
+    	column.setCurrency(true);
+    	column.setDatatypeName("string");
+    	column.setDefaultValue("def");
+    	column.setLengthFixed(true);
+    	column.setMaximumValue("10");
+    	column.setMinimumValue("9");
+    	column.setNativeType("string");
+    	column.setNullValueCount(10);
+    	column.setPrecision(77);
+    	column.setRadix(88);
+    	column.setScale(99);
+    	column.setSearchability(SEARCHABILITY_OPTIONS.LIKE_ONLY);
+    	column.setSelectable(false);
+    	column.setSigned(false);
+    	column.setUpdateable(false);
+    	    	
+    	// Compare object properties to expected
+    	expectedProps.put(RelationalConstants.COLUMN_DDL_PROPERTY_KEYS.NULLABLE, NULLABLE_OPTIONS.NULL); 
+    	expectedProps.put(RelationalConstants.COLUMN_DDL_PROPERTY_KEYS.AUTO_INCREMENTED, true); 
+    	expectedProps.put(RelationalConstants.COLUMN_DDL_PROPERTY_KEYS.LENGTH, 3); 
+    	expectedProps.put(RelationalConstants.COLUMN_DDL_OPTION_KEYS.CASE_SENSITIVE, false);
+    	expectedProps.put(RelationalConstants.COLUMN_DDL_OPTION_KEYS.CHAR_OCTET_LENGTH, 3);
+    	expectedProps.put(RelationalConstants.COLUMN_DDL_OPTION_KEYS.CURRENCY, true);
+    	expectedProps.put(RelationalConstants.COLUMN_DDL_PROPERTY_KEYS.DATATYPE_NAME, "string");
+    	expectedProps.put(RelationalConstants.COLUMN_DDL_PROPERTY_KEYS.DEFAULT_VALUE, "def");
+    	expectedProps.put(RelationalConstants.COLUMN_DDL_OPTION_KEYS.FIXED_LENGTH, true);
+    	expectedProps.put(RelationalConstants.COLUMN_DDL_OPTION_KEYS.MAX_VALUE, "10");
+    	expectedProps.put(RelationalConstants.COLUMN_DDL_OPTION_KEYS.MIN_VALUE, "9");
+    	expectedProps.put(RelationalConstants.COLUMN_DDL_OPTION_KEYS.NATIVE_TYPE, "string");
+    	expectedProps.put(RelationalConstants.COLUMN_DDL_OPTION_KEYS.NULL_VALUE_COUNT, 10);
+    	expectedProps.put(RelationalConstants.COLUMN_DDL_PROPERTY_KEYS.PRECISION, 77);
+    	expectedProps.put(RelationalConstants.COLUMN_DDL_OPTION_KEYS.RADIX, 88);
+    	expectedProps.put(RelationalConstants.COLUMN_DDL_PROPERTY_KEYS.SCALE, 99);
+    	expectedProps.put(RelationalConstants.COLUMN_DDL_OPTION_KEYS.SEARCHABLE, SEARCHABILITY_OPTIONS.LIKE_ONLY);
+    	expectedProps.put(RelationalConstants.COLUMN_DDL_OPTION_KEYS.SELECTABLE, false);
+    	expectedProps.put(RelationalConstants.COLUMN_DDL_OPTION_KEYS.SIGNED, false);
+    	expectedProps.put(RelationalConstants.COLUMN_DDL_OPTION_KEYS.UPDATABLE, false);
+    	result = RelationalTestUtil.compareProperties(column, expectedProps);
+    	if(!result.equals("OK")) { //$NON-NLS-1$
+    		Assert.fail(result);  
+    	}
+    	    	   	
+    }
+    
+	/**
+     * Test setting of properties of relational procedures after import of Teiid-SAPGateway.ddl
+     * Expected outcome - successful modification
+	 * @throws Exception the exception
+     */
+    @Test
+    public void shouldSetProcProperties() throws Exception {
+    	File ddlFile = new File( TEIID_SAP_GATEWAY_FULL );
+    	RelationalModel relationalModel = getRelationalModel(ddlFile);
+    	
+    	// Get Model name
+    	//String modelName = relationalModel.getName();
+            	
+    	// ---------------------------------------
+    	// Test expected procedures for the model
+    	// ---------------------------------------
+    	String[] procNames = new String[] {"CheckFlightAvailability","GetAgencyDetails","GetAvailableFlights","GetFlightDetails",
+                "UpdateAgencyPhoneNo"};
+    	boolean hasProcs = RelationalTestUtil.childrenMatch(relationalModel,procNames, RelationalConstants.Type.PROCEDURE);
+    	if(!hasProcs) {
+    		Assert.fail("expected Procedures do not match");   //$NON-NLS-1$
+    	}
+
+    	// -----------------------------------------------------
+    	// Test expected params for GetFlightDetails procedure
+    	// -----------------------------------------------------
+    	//CREATE FOREIGN PROCEDURE GetFlightDetails(IN airlineid string, IN connectionid string) RETURNS TABLE (countryFrom string, cityFrom string, airportFrom string, countryTo string, cityTo string, airportTo string, flightTime integer, departureTime time, arrivalTime time, distance bigdecimal, distanceUnit string, flightType string, period byte)
+    	//OPTIONS ("teiid_odata:EntityType" 'RMTSAMPLEFLIGHT.FlightDetails', "teiid_odata:HttpMethod" 'GET')
+
+    	Procedure proc = relationalModel.getProcedure("GetFlightDetails");
+		String[] paramNames = new String[] {"airlineid","connectionid"};
+    	boolean hasParams = RelationalTestUtil.childrenMatch(proc, paramNames, RelationalConstants.Type.PARAMETER);
+    	if(!hasParams) {
+    		Assert.fail("expected parameters do not match");   //$NON-NLS-1$
+    	}
+    	
+    	// ----------------------------------------------------
+    	// Test expected properties for GetFlightDetails procedure
+    	// ----------------------------------------------------
+    	Map<String,Object> expectedProps = new HashMap<String,Object>();
+    	expectedProps.putAll(RelationalConstants.PROCEDURE_DEFAULT.toMap());
+    	expectedProps.put(RelationalConstants.COMMON_DDL_PROPERTY_KEYS.NAME, "GetFlightDetails"); //$NON-NLS-1$ //$NON-NLS-2$
+    	expectedProps.put("teiid_odata:EntityType", "RMTSAMPLEFLIGHT.FlightDetails"); //$NON-NLS-1$ //$NON-NLS-2$
+    	expectedProps.put("teiid_odata:HttpMethod", "GET"); //$NON-NLS-1$ //$NON-NLS-2$
+    	
+    	// Compare object properties to expected
+    	String result = RelationalTestUtil.compareProperties(proc, expectedProps);
+    	if(!result.equals("OK")) { //$NON-NLS-1$
+    		Assert.fail(result);  
+    	}
+    	
+    	// ----------------------------------
+    	// Set other procedure PROPERTIES
+    	// ----------------------------------
+    	proc.setAggregate(true);
+    	proc.setAllowsDistinct(true);
+    	proc.setAllowsOrderBy(true);
+    	proc.setAnalytic(true);
+    	proc.setDecomposable(true);
+    	proc.setDeterminism(DETERMINISM_OPTIONS.SESSION_DETERMINISTIC);
+    	proc.setFunctionCategory("MyCat");
+    	proc.setJavaClassName("JClass");
+    	proc.setJavaMethodName("JMethod");
+    	proc.setNonPrepared(true);
+    	proc.setReturnsNullOnNull(true);
+    	proc.setUpdateCount(UPDATE_COUNT_OPTIONS.MULTIPLE);
+    	proc.setUseDistinctRows(true);
+    	proc.setVariableArguments(true);
+
+    	expectedProps.put(RelationalConstants.PROCEDURE_DDL_OPTION_KEYS.AGGREGATE, true);
+    	expectedProps.put(RelationalConstants.PROCEDURE_DDL_OPTION_KEYS.ALLOWS_DISTINCT, true);
+    	expectedProps.put(RelationalConstants.PROCEDURE_DDL_OPTION_KEYS.ALLOWS_ORDERBY, true);
+    	expectedProps.put(RelationalConstants.PROCEDURE_DDL_OPTION_KEYS.ANALYTIC, true);
+    	expectedProps.put(RelationalConstants.PROCEDURE_DDL_OPTION_KEYS.DECOMPOSABLE, true);
+    	expectedProps.put(RelationalConstants.PROCEDURE_DDL_OPTION_KEYS.DETERMINISM, DETERMINISM_OPTIONS.SESSION_DETERMINISTIC);
+    	expectedProps.put(RelationalConstants.PROCEDURE_DDL_OPTION_KEYS.CATEGORY, "MyCat");
+    	expectedProps.put(RelationalConstants.PROCEDURE_DDL_OPTION_KEYS.JAVA_CLASS, "JClass");
+    	expectedProps.put(RelationalConstants.PROCEDURE_DDL_OPTION_KEYS.JAVA_METHOD, "JMethod");
+    	expectedProps.put(RelationalConstants.PROCEDURE_DDL_OPTION_KEYS.NON_PREPARED, true);
+    	expectedProps.put(RelationalConstants.PROCEDURE_DDL_OPTION_KEYS.NULL_ON_NULL, true);
+    	expectedProps.put(RelationalConstants.PROCEDURE_DDL_OPTION_KEYS.UPDATECOUNT, UPDATE_COUNT_OPTIONS.MULTIPLE);
+    	expectedProps.put(RelationalConstants.PROCEDURE_DDL_OPTION_KEYS.USES_DISTINCT_ROWS, true);
+    	expectedProps.put(RelationalConstants.PROCEDURE_DDL_OPTION_KEYS.VARARGS, true);
+
+    	// Compare object properties to expected
+    	result = RelationalTestUtil.compareProperties(proc, expectedProps);
+    	if(!result.equals("OK")) { //$NON-NLS-1$
+    		Assert.fail(result);  
+    	}
+    }
+    
+	/**
+     * Test setting of properties of relational procedure parameters after import of Teiid-SAPGateway.ddl
+     * Expected outcome - successful modification
+	 * @throws Exception the exception
+     */
+    @Test
+    public void shouldSetProcParamProperties() throws Exception {
+    	File ddlFile = new File( TEIID_SAP_GATEWAY_FULL );
+    	RelationalModel relationalModel = getRelationalModel(ddlFile);
+    	
+    	// Get Model name
+    	//String modelName = relationalModel.getName();
+            	
+    	// ---------------------------------------
+    	// Test expected procedures for the model
+    	// ---------------------------------------
+    	String[] procNames = new String[] {"CheckFlightAvailability","GetAgencyDetails","GetAvailableFlights","GetFlightDetails",
+                "UpdateAgencyPhoneNo"};
+    	boolean hasProcs = RelationalTestUtil.childrenMatch(relationalModel,procNames, RelationalConstants.Type.PROCEDURE);
+    	if(!hasProcs) {
+    		Assert.fail("expected Procedures do not match");   //$NON-NLS-1$
+    	}
+
+    	// -----------------------------------------------------
+    	// Test expected params for GetFlightDetails procedure
+    	// -----------------------------------------------------
+    	//CREATE FOREIGN PROCEDURE GetFlightDetails(IN airlineid string, IN connectionid string) RETURNS TABLE (countryFrom string, cityFrom string, airportFrom string, countryTo string, cityTo string, airportTo string, flightTime integer, departureTime time, arrivalTime time, distance bigdecimal, distanceUnit string, flightType string, period byte)
+    	//OPTIONS ("teiid_odata:EntityType" 'RMTSAMPLEFLIGHT.FlightDetails', "teiid_odata:HttpMethod" 'GET')
+
+    	Procedure proc = relationalModel.getProcedure("GetFlightDetails");
+		String[] paramNames = new String[] {"airlineid","connectionid"};
+    	boolean hasParams = RelationalTestUtil.childrenMatch(proc, paramNames, RelationalConstants.Type.PARAMETER);
+    	if(!hasParams) {
+    		Assert.fail("expected parameters do not match");   //$NON-NLS-1$
+    	}
+    	
+    	// --------------------------------------------------------
+    	// Test expected properties for Proc Parameter 'airlineid' 
+    	// --------------------------------------------------------
+    	Map<String,Object> expectedProps = new HashMap<String,Object>();
+    	Parameter param = proc.getParameter("airlineid");
+    	expectedProps = new HashMap<String,Object>();
+    	expectedProps.putAll(RelationalConstants.PARAMETER_DEFAULT.toMap());
+    	expectedProps.put(RelationalConstants.COMMON_DDL_PROPERTY_KEYS.NAME, "airlineid"); //$NON-NLS-1$
+    	expectedProps.put(RelationalConstants.PARAMETER_DDL_PROPERTY_KEYS.DATATYPE_NAME, "STRING"); //$NON-NLS-1$
+    	expectedProps.put(RelationalConstants.PARAMETER_DDL_PROPERTY_KEYS.DIRECTION, "IN"); //$NON-NLS-1$
+    	
+    	// Compare object properties to expected
+    	String result = RelationalTestUtil.compareProperties(param, expectedProps);
+    	if(!result.equals("OK")) { //$NON-NLS-1$
+    		Assert.fail(result);  
+    	}
+    	
+    	param.setDatatypeName("long");
+    	param.setDefaultValue("dunno");
+    	param.setLength(99);
+    	param.setNativeType("long");
+    	param.setPrecision(98);
+    	param.setScale(97);
+    	param.setNullable(RelationalConstants.NULLABLE_OPTIONS.NOT_NULL);
+    	param.setDirection(RelationalConstants.DIRECTION_OPTIONS.INOUT);
+    	
+    	expectedProps.put(RelationalConstants.PARAMETER_DDL_PROPERTY_KEYS.DATATYPE_NAME, "long"); //$NON-NLS-1$
+    	expectedProps.put(RelationalConstants.PARAMETER_DDL_PROPERTY_KEYS.DEFAULT_VALUE , "dunno"); //$NON-NLS-1$
+    	expectedProps.put(RelationalConstants.PARAMETER_DDL_PROPERTY_KEYS.LENGTH , 99); 
+    	expectedProps.put(RelationalConstants.PARAMETER_DDL_PROPERTY_KEYS.PRECISION , 98); 
+    	expectedProps.put(RelationalConstants.PARAMETER_DDL_OPTION_KEYS.NATIVE_TYPE , "long"); //$NON-NLS-1$
+    	expectedProps.put(RelationalConstants.PARAMETER_DDL_PROPERTY_KEYS.SCALE , 97); 
+    	expectedProps.put(RelationalConstants.PARAMETER_DDL_PROPERTY_KEYS.NULLABLE , RelationalConstants.NULLABLE_OPTIONS.NOT_NULL); 
+    	expectedProps.put(RelationalConstants.PARAMETER_DDL_PROPERTY_KEYS.DIRECTION , RelationalConstants.DIRECTION_OPTIONS.INOUT); 
+
+    	// Compare object properties to expected
+    	result = RelationalTestUtil.compareProperties(param, expectedProps);
+    	if(!result.equals("OK")) { //$NON-NLS-1$
+    		Assert.fail(result);  
+    	}
     }
     
     private RelationalModel getRelationalModel(File ddlFile) throws Exception {

@@ -69,42 +69,46 @@ public class Parameter extends RelationalObject {
     public String getNullable() {
     	return getPropertyValue(RelationalConstants.PARAMETER_DDL_PROPERTY_KEYS.NULLABLE).toString();
     }
-//    /**
-//     * @param nullable Sets nullable to the specified value.
-//     */
-//    public void setNullable( String nullable ) {
-//    	ArgCheck.isNotEmpty(nullable);
-//    	String[] allowedValues = NULLABLE_OPTIONS.AS_ARRAY;
-//    	boolean matchFound = false;
-//    	for(int i=0; i<allowedValues.length; i++) {
-//    		if(allowedValues[i].equalsIgnoreCase(nullable)) {
-//    			this.nullable = allowedValues[i];
-//    			matchFound = true;
-//    		}
-//    	}
-//    	if(!matchFound) throw new IllegalArgumentException(Messages.getString(RELATIONAL.columnError_Nullable_NotAllowable,nullable));
-//    }
+    
+    /**
+     * @param nullable Sets nullable to the specified value.
+     */
+    public void setNullable( String nullable ) {
+    	//ArgCheck.isNotEmpty(nullable);
+    	String[] allowedValues = RelationalConstants.NULLABLE_OPTIONS.AS_ARRAY;
+    	boolean matchFound = false;
+    	for(int i=0; i<allowedValues.length; i++) {
+    		if(allowedValues[i].equalsIgnoreCase(nullable)) {
+    			setPropertyValue(RelationalConstants.PARAMETER_DDL_PROPERTY_KEYS.NULLABLE,allowedValues[i]);
+    			matchFound = true;
+    		}
+    	}
+    	//if(!matchFound) throw new IllegalArgumentException(Messages.getString(RELATIONAL.columnError_Nullable_NotAllowable,nullable));
+    }
+        
     /**
      * @return direction
      */
     public String getDirection() {
     	return getPropertyValue(RelationalConstants.PARAMETER_DDL_PROPERTY_KEYS.DIRECTION).toString();
     }
-//    /**
-//     * @param direction Sets direction to the specified value.
-//     */
-//    public void setDirection( String direction ) {
-//    	ArgCheck.isNotEmpty(direction);
-//    	String[] allowedValues = DIRECTION_OPTIONS.AS_ARRAY;
-//    	boolean matchFound = false;
-//    	for(int i=0; i<allowedValues.length; i++) {
-//    		if(allowedValues[i].equalsIgnoreCase(direction)) {
-//    			this.direction = allowedValues[i];
-//    			matchFound = true;
-//    		}
-//    	}
-//    	if(!matchFound) throw new IllegalArgumentException(Messages.getString(RELATIONAL.parameterError_Direction_NotAllowable,direction));
-//    }
+    
+    /**
+     * @param direction Sets direction to the specified value.
+     */
+    public void setDirection( String direction ) {
+    	//ArgCheck.isNotEmpty(direction);
+    	String[] allowedValues = RelationalConstants.DIRECTION_OPTIONS.AS_ARRAY;
+    	boolean matchFound = false;
+    	for(int i=0; i<allowedValues.length; i++) {
+    		if(allowedValues[i].equalsIgnoreCase(direction)) {
+    			setPropertyValue(RelationalConstants.PARAMETER_DDL_PROPERTY_KEYS.DIRECTION,allowedValues[i]);
+    			matchFound = true;
+    		}
+    	}
+    	//if(!matchFound) throw new IllegalArgumentException(Messages.getString(RELATIONAL.parameterError_Direction_NotAllowable,direction));
+    }
+    
     /**
      * @return defaultValue
      */
@@ -137,14 +141,14 @@ public class Parameter extends RelationalObject {
      * @return precision
      */
     public int getPrecision() {
-    	return Integer.parseInt(getPropertyValue(RelationalConstants.PARAMETER_DDL_PROPERTY_KEYS.SCALE).toString());
+    	return Integer.parseInt(getPropertyValue(RelationalConstants.PARAMETER_DDL_PROPERTY_KEYS.PRECISION).toString());
     }
 
     /**
      * @param precision the precision
      */
-    public void setPrecision(int precision) {
-    	setPropertyValue(RelationalConstants.PARAMETER_DDL_PROPERTY_KEYS.SCALE,precision);
+    public void setPrecision(long precision) {
+    	setPropertyValue(RelationalConstants.PARAMETER_DDL_PROPERTY_KEYS.PRECISION,precision);
     }
 
     /**
@@ -157,7 +161,7 @@ public class Parameter extends RelationalObject {
     /**
      * @param scale the scale
      */
-    public void setScale(int scale) {
+    public void setScale(long scale) {
     	setPropertyValue(RelationalConstants.PARAMETER_DDL_PROPERTY_KEYS.SCALE,scale);
     }
 
@@ -213,7 +217,7 @@ public class Parameter extends RelationalObject {
 			propertyValue = this.delegate.getPropertyValue(StandardDdlLexicon.DATATYPE_SCALE);
 			propertyValue = (propertyValue==null) ? RelationalConstants.PARAMETER_DEFAULT.SCALE : propertyValue;
 		} else if(propertyKey.equals(RelationalConstants.PARAMETER_DDL_PROPERTY_KEYS.DIRECTION)) {
-			propertyValue = this.delegate.getPropertyValue(propertyKey);
+			propertyValue = this.delegate.getPropertyValue(TeiidDdlLexicon.CreateProcedure.PARAMETER_TYPE);
 			propertyValue = (propertyValue==null) ? RelationalConstants.PARAMETER_DEFAULT.DIRECTION : propertyValue;
 		} else if(propertyKey.equals(RelationalConstants.PARAMETER_DDL_OPTION_KEYS.NATIVE_TYPE)) {
 			propertyValue = this.delegate.getOptionValue(propertyKey);
@@ -233,25 +237,25 @@ public class Parameter extends RelationalObject {
 		// ---------------------------
 		if(propertyKey.equals(RelationalConstants.PARAMETER_DDL_PROPERTY_KEYS.LENGTH)) {
 			Long pVal = (propertyValue==null) ? RelationalConstants.PARAMETER_DEFAULT.LENGTH : (Long)propertyValue;
-			wasSet = this.delegate.setPropertyValue(propertyKey, pVal);
+			wasSet = this.delegate.setPropertyValue(StandardDdlLexicon.DATATYPE_LENGTH, pVal);
 		} else if(propertyKey.equals(RelationalConstants.PARAMETER_DDL_PROPERTY_KEYS.DATATYPE_NAME)) {
 			String pVal = (propertyValue==null) ? RelationalConstants.PARAMETER_DEFAULT.DATATYPE_NAME : (String)propertyValue;
-			wasSet = this.delegate.setPropertyValue(propertyKey, pVal);
+			wasSet = this.delegate.setPropertyValue(StandardDdlLexicon.DATATYPE_NAME, pVal);
 		} else if(propertyKey.equals(RelationalConstants.PARAMETER_DDL_PROPERTY_KEYS.DEFAULT_VALUE)) {
 			String pVal = (propertyValue==null) ? RelationalConstants.PARAMETER_DEFAULT.DEFAULT_VALUE : (String)propertyValue;
-			wasSet = this.delegate.setPropertyValue(propertyKey, pVal);
+			wasSet = this.delegate.setPropertyValue(StandardDdlLexicon.DEFAULT_VALUE, pVal);
 		} else if(propertyKey.equals(RelationalConstants.PARAMETER_DDL_PROPERTY_KEYS.NULLABLE)) {
 			String pVal = (propertyValue==null) ? RelationalConstants.PARAMETER_DEFAULT.NULLABLE : (String)propertyValue;
-			wasSet = this.delegate.setPropertyValue(propertyKey, pVal);
+			wasSet = this.delegate.setPropertyValue(StandardDdlLexicon.NULLABLE, pVal);
 		} else if(propertyKey.equals(RelationalConstants.PARAMETER_DDL_PROPERTY_KEYS.PRECISION)) {
 			Long pVal = (propertyValue==null) ? RelationalConstants.PARAMETER_DEFAULT.PRECISION : (Long)propertyValue;
-			wasSet = this.delegate.setPropertyValue(propertyKey, pVal);
+			wasSet = this.delegate.setPropertyValue(StandardDdlLexicon.DATATYPE_PRECISION, pVal);
 		} else if(propertyKey.equals(RelationalConstants.PARAMETER_DDL_PROPERTY_KEYS.SCALE)) {
 			Long pVal = (propertyValue==null) ? RelationalConstants.PARAMETER_DEFAULT.SCALE : (Long)propertyValue;
-			wasSet = this.delegate.setPropertyValue(propertyKey, pVal);
+			wasSet = this.delegate.setPropertyValue(StandardDdlLexicon.DATATYPE_SCALE, pVal);
 		} else if(propertyKey.equals(RelationalConstants.PARAMETER_DDL_PROPERTY_KEYS.DIRECTION)) {
 			String pVal = (propertyValue==null) ? RelationalConstants.PARAMETER_DEFAULT.DIRECTION : (String)propertyValue;
-			wasSet = this.delegate.setPropertyValue(propertyKey, pVal);
+			wasSet = this.delegate.setPropertyValue(TeiidDdlLexicon.CreateProcedure.PARAMETER_TYPE, pVal);
 		// ---------------------------
 		// Statement Options
 		// ---------------------------

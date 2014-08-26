@@ -186,7 +186,7 @@ public interface RelationalConstants {
         public static final String DATATYPE_NAME = null;
         public static final String DEFAULT_VALUE = null;
         public static final String NATIVE_TYPE = null;
-        public static final String NULLABLE = NULLABLE_OPTIONS.NULLABLE;
+        public static final String NULLABLE = NULLABLE_OPTIONS.NULL;
         public static final boolean AUTO_INCREMENTED = false;
         public static final boolean CASE_SENSITIVE = true;
         public static final String CHARACTER_SET_NAME = null;
@@ -379,7 +379,7 @@ public interface RelationalConstants {
         public static final int PRECISION = 0;
         public static final String NATIVE_TYPE = null;
         public static final String DATATYPE_NAME = null;
-        public static final String NULLABLE = NULLABLE_OPTIONS.NULLABLE;
+        public static final String NULLABLE = NULLABLE_OPTIONS.NULL;
         public static final String DIRECTION = DIRECTION_OPTIONS.IN;
         public static final String DEFAULT_VALUE = null;
         public static final int STRING_LENGTH = 4000;
@@ -465,12 +465,10 @@ public interface RelationalConstants {
     
     // NO_NULLS, NULLABLE, NULLABLE_UNKNOWN
     class NULLABLE_OPTIONS {
-        public static final String NO_NULLS = "NOT NULL"; //$NON-NLS-1$
-//        public static final String NO_NULLS = "NO_NULLS"; //$NON-NLS-1$
-        public static final String NULLABLE = "NULL"; //$NON-NLS-1$
-        public static final String NULLABLE_UNKNOWN = "NULLABLE_UNKNOWN"; //$NON-NLS-1$
-        public static final String[] AS_ARRAY = { NO_NULLS, NULLABLE, NULLABLE_UNKNOWN };
-        public static final String DEFAULT_VALUE = NULLABLE;
+        public static final String NOT_NULL = "NOT NULL"; //$NON-NLS-1$
+        public static final String NULL = "NULL"; //$NON-NLS-1$
+        public static final String[] AS_ARRAY = { NOT_NULL, NULL };
+        public static final String DEFAULT_VALUE = NULL;
     }
     
     // MANY, ONE, UNSPECIFICIED, ZERO_TO_MANY, ZERO_TO_ONE
@@ -493,15 +491,13 @@ public interface RelationalConstants {
         public static final String DEFAULT_VALUE = AUTO;
     }
     
-    // IN, IN_OUT, OUT, RETURN, UNKNOWN
+    // IN, INOUT, OUT, VARIADIC
     class DIRECTION_OPTIONS {
         public static final String IN = "IN"; //$NON-NLS-1$
-        public static final String IN_OUT = "IN_OUT"; //$NON-NLS-1$
+        public static final String INOUT = "INOUT"; //$NON-NLS-1$
         public static final String OUT = "OUT"; //$NON-NLS-1$
-        public static final String RETURN = "RETURN"; //$NON-NLS-1$
-        public static final String UNKNOWN = "UNKNOWN"; //$NON-NLS-1$
-        public static final String[] AS_ARRAY = {IN, IN_OUT, OUT, RETURN, UNKNOWN};
-        public static final String[] AS_ARRAY_SOURCE_FUNCTION_OPTIONS = {IN, RETURN};
+        public static final String VARIADIC = "VARIADIC"; //$NON-NLS-1$
+        public static final String[] AS_ARRAY = {IN, INOUT, OUT, VARIADIC};
         public static final String DEFAULT_VALUE = IN;
     }
     
